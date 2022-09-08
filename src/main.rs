@@ -1,6 +1,6 @@
 use tide::{Response, Body};
 use dotenv;
-use async_std::prelude::*;
+use async_std::{prelude::*};
 use tide_websockets::{Message, WebSocket};
 
 #[async_std::main]
@@ -12,19 +12,26 @@ async fn main() -> Result<(), std::io::Error> {
     app.at("/")
     .with(WebSocket::new(|_request, mut stream| async move {
         while let Some(Ok(Message::Text(input))) = stream.next().await {
-            let output: String = input.chars().rev().collect();
-
+            
+            let output = format!("YO! {}", input);
             stream
-                .send_string(format!("{} | {}", &input, &output))
+                .send_string(output)
                 .await?;
         }
 
         Ok(())
     }))
-    
     .get(|_| async move {
         let mut res = Response::new(201);
-        res.set_body(Body::from_file("/index.html").await?);
+        res.set_body(Body::from_file("home/index.html").await?);
+        Ok(res)
+    });
+
+
+    app.at("/script.js")
+    .get(|_| async move {
+        let mut res = Response::new(201);
+        res.set_body(Body::from_file("home/script.js").await?);
         Ok(res)
     });
     
