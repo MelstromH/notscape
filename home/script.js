@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:8080/");
+let socket = new WebSocket("ws://localhost:8080/ws");
 
 function talk()
 {
