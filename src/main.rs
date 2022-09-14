@@ -5,11 +5,14 @@ use dotenv;
 use async_std::{prelude::*, sync::RwLock};
 use tide_websockets::{Message, WebSocket, WebSocketConnection, async_tungstenite};
 use tokio::{runtime::Runtime};
+use array2d::Array2D;
 
 #[tokio::main]
 async fn main() -> Result<(), tide::Error> {
     dotenv::dotenv().ok();
     tide::log::start();
+
+    let grid = Array2D::filled_with("", 16, 16);
 
     let state = State::new();
     let overseer = Overseer::new(state.clone());
@@ -18,7 +21,7 @@ async fn main() -> Result<(), tide::Error> {
         overseer.start_game().await.unwrap();
     });
 
-   
+    
 
     let mut app = tide::with_state(state);
 

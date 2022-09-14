@@ -3,7 +3,7 @@
 <head>
 <title>Notscape</title>
 <style>
-.grid {
+#grid {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -11,17 +11,18 @@
     width: 1000px;
     height: 1000px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 0px;
 }
 
 .tile {
+    box-sizing: border-box;
     background-color: grey;
-    width: 125px;
-    height: 125px;
-    border: 1px;
-    border-color: black;
-    margin: 2px;
+    width: 62.5px;
+    height: 62.5px;
+    border: 1px solid;
+    border-color:black;
+    margin: 0px;
 }
 </style>
 </head>
@@ -29,72 +30,7 @@
 <script src="script.js"></script>
 <h1>Say Hi</h1>
 <button onclick="talk()">hello</button>
-<div class="grid">
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-    <div class="tile"><img src="" alt=""></div>
-
+<div id="grid">
 </div>
 
 </body>
