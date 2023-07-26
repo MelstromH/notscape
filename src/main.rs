@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, VecDeque}, thread, time::Duration, ops::Add, sync::Arc, i32};
+use std::{collections::{HashMap, VecDeque}, thread, time::Duration, ops::{Add}, sync::Arc, i32};
 
 use tide::{Response, Body, Request};
 use dotenv;
@@ -46,7 +46,11 @@ async fn main() -> Result<(), tide::Error> {
 
                 match parts[0] {
                     "MOVE" => {
-                        state.update_grid(&parts[1].to_string(), client.clone()).await;
+                        //state.update_grid().await;
+                        let mut entities = state.entities.write().await;
+                        let mut entry = entities.get_mut(&client.id.parse::<i32>().unwrap()).unwrap();
+                        entry.move_queue = get_path(parts[1].parse::<i32>().unwrap(), entry.index)
+
                     }
 
                     _ => println!("ERROR: Invalid input")
@@ -335,6 +339,7 @@ fn get_adjacent_cardinal(cell: i32) -> [i32; 4]
 #[derive(Clone)]
 struct State {
     clients: Arc<RwLock<HashMap<String,Client>>>,
+    entities: Arc<RwLock<HashMap<i32,Entity>>>,
     grid: Arc<RwLock<HashMap<i32, String>>>,
 }
 
@@ -344,12 +349,29 @@ impl State {
             clients: Default::default(),
             //grid: Array2D::filled_with("empty".to_string(), 16, 16),
             grid: Default::default(),
+            entities: Default::default(),
         }
     }
 
     async fn add_player_to_game(&self, client_id: String, client: Client) -> Result<String, std::io::Error> {
         let mut clients = self.clients.write().await;
-        clients.insert(client_id, client);
+        let mut entities = self.entities.write().await;
+        clients.insert(client_id.clone(), client);
+        
+        let mut test_vec = VecDeque::new();
+        test_vec.push_back(0);
+        test_vec.push_back(1);
+        test_vec.push_back(2);
+        test_vec.push_back(3);
+        test_vec.push_back(4);
+        test_vec.push_back(5);
+
+
+        let new_entity = Entity::new(client_id.clone(), test_vec, 0);    
+
+        entities.insert(client_id.parse::<i32>().unwrap(), new_entity);
+
+
         print!("\n{}", clients.keys().count());
         Ok("Client Inserted".to_string())
     }
@@ -403,37 +425,56 @@ impl State {
         return output.to_string();
     }
 
-    async fn update_grid(&self, index: &String, client: Client)
+    async fn update_grid(&self)
     {
-        println!("Input: {}", index);
-        let index_num = index.parse::<i32>().unwrap();
-        let mut current_pos = 0;
+        //println!("Input: {}", index);
+        //let index_num = index.parse::<i32>().unwrap();
+        //let mut current_pos = 0;
 
         let mut grid = self.grid.write().await;
+        let mut entities = self.entities.write().await;
 
-        let mut i = 0;
-        while i < 256 {
-            if grid[&i] == client.id
+        for entity in entities.iter_mut() {
+            let entity_id = &entity.1.id;
+
+            if entity.1.move_queue.iter().count() > 0
             {
-                current_pos = i;
-                grid.entry(i).and_modify(|e| {*e = "0".to_string()});
+                grid.entry(entity.1.index).and_modify(|e| {*e = 0.to_string()});
+                print!("INDEX: {}, ", entity.1.index);
+
+                let next_move = entity.1.move_queue.pop_front().unwrap();
+                let mut i = 0;
+                while i < 256 {
+
+                    if i == next_move
+                    {
+                        next_move.to_string();
+                        grid.entry(i).and_modify(|e| {*e = entity_id.clone()});
+                        entity.1.index = i;
+                    }
+        
+                    
+                    i = i + 1;
+                }
+                
             }
-            i = i + 1;
         }
 
         
+        
+        
 
-        print!("start: {}\n", current_pos);
+        //print!("start: {}\n", current_pos);
 
-        let path = get_path(index_num, current_pos);
+        // let path = get_path(index_num, current_pos);
 
-        for step in &path
-        {
-            print!(":{}, ", step);
-            grid.entry(*step).and_modify(|e| {*e = "2".to_string()});
-        }
+        // for step in &path
+        // {
+        //     print!(":{}, ", step);
+        //     grid.entry(*step).and_modify(|e| {*e = "2".to_string()});
+        // }
 
-        grid.entry(*path.back().unwrap()).and_modify(|e| {*e = client.id});
+        // grid.entry(*path.back().unwrap()).and_modify(|e| {*e = client.id});
 
         print!("\n");
         
@@ -452,6 +493,23 @@ impl Client{
         Self {
             id: Default::default(),
             wsc: stream,
+        }
+    }
+}
+
+#[derive(Clone, Default)]
+struct Entity {
+    id: String,
+    move_queue: VecDeque<i32>,
+    index: i32,
+}
+
+impl Entity {
+    fn new(id: String, move_queue: VecDeque<i32>, index: i32) -> Self {
+        Self {
+            id: id,
+            move_queue: move_queue,
+            index: index
         }
     }
 }
@@ -490,7 +548,9 @@ impl Overseer {
                 }
                 Err(e) => return Err(e)
             }
-            thread::sleep(Duration::from_millis(500));
+
+            state.update_grid().await;
+            thread::sleep(Duration::from_millis(250));
         }
     }
 }
